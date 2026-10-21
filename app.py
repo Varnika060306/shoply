@@ -2,7 +2,10 @@ import os
 import re
 import sqlite3
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import (
+    Flask, flash, redirect, render_template, request, session, url_for,
+)
+from werkzeug.security import check_password_hash
 
 from database.db import create_user, get_db, get_user_by_email, init_db, seed_db
 
@@ -16,6 +19,8 @@ with app.app_context():
 
 EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 DUPLICATE_EMAIL_ERROR = "An account with that email already exists."
+LOGIN_REQUIRED_ERROR = "Please enter your email and password."
+INVALID_LOGIN_ERROR = "Invalid email or password."
 
 
 def _validate_registration(name, email, password):
@@ -66,9 +71,43 @@ def register():
     return redirect(url_for("login"))
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    if request.method == "GET":
+        if "user_id" in session:
+            return redirect(url_for("landing"))
+        return render_template("login.html")
+
+    email = request.form.get("email", "").strip().lower()
+    # The password is checked exactly as typed, never trimmed.
+    password = request.form.get("password", "")
+
+    if not email or not password.strip():
+        return render_template(
+            "login.html", error=LOGIN_REQUIRED_ERROR, email=email
+        ), 400
+
+    user = get_user_by_email(email)
+    # Same message for unknown email and wrong password, so the form
+    # doesn't reveal which emails are registered.
+    if user is None or not check_password_hash(user["password_hash"], password):
+        return render_template(
+            "login.html", error=INVALID_LOGIN_ERROR, email=email
+        ), 401
+
+    # Drop any old session data before signing the user in.
+    session.clear()
+    session["user_id"] = user["id"]
+    session["user_name"] = user["name"]
+    return redirect(url_for("landing"))
+
+
+@app.route("/logout")
+def logout():
+    # Clear before flashing: flash messages are stored in the session.
+    session.clear()
+    flash("You have been signed out.", "success")
+    return redirect(url_for("login"))
 
 
 @app.route("/terms")
@@ -84,11 +123,6 @@ def privacy():
 # ------------------------------------------------------------------ #
 # Placeholder routes — students will implement these                  #
 # ------------------------------------------------------------------ #
-
-@app.route("/logout")
-def logout():
-    return "Logout — coming in Step 3"
-
 
 @app.route("/profile")
 def profile():
