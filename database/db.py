@@ -97,3 +97,31 @@ def seed_db():
             )
     finally:
         conn.close()
+
+
+# Callers must pass an already trimmed, lowercased email.
+def get_user_by_email(email):
+    conn = get_db()
+    try:
+        return conn.execute(
+            "SELECT id, name, email, password_hash, created_at "
+            "FROM users WHERE email = ?",
+            (email,),
+        ).fetchone()
+    finally:
+        conn.close()
+
+
+# Raises sqlite3.IntegrityError if the email is already registered.
+def create_user(name, email, password):
+    password_hash = generate_password_hash(password)
+    conn = get_db()
+    try:
+        with conn:
+            cursor = conn.execute(
+                "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+                (name, email, password_hash),
+            )
+        return cursor.lastrowid
+    finally:
+        conn.close()
