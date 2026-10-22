@@ -28,6 +28,22 @@
     --radius-sm: 6px;
     --radius-md: 12px;
     --radius-lg: 20px;
+
+    /* Category colours: strong (text, bars) and light (badge backgrounds) */
+    --cat-food: #2f7d5b;
+    --cat-food-light: #e6f2ec;
+    --cat-transport: #2b6cb0;
+    --cat-transport-light: #e6eef8;
+    --cat-bills: #c17f24;
+    --cat-bills-light: #fdf3e3;
+    --cat-health: #b83280;
+    --cat-health-light: #fbe9f3;
+    --cat-entertainment: #6b46c1;
+    --cat-entertainment-light: #efeafb;
+    --cat-shopping: #c05621;
+    --cat-shopping-light: #fdeee4;
+    --cat-other: #6b6b6b;
+    --cat-other-light: #f0ede6;
 }
 
 /* ------------------------------------------------------------------ */
