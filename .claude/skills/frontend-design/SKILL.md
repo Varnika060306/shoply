@@ -1,7 +1,7 @@
 ---
 name: frontend-design
 description: Designs and generates modern, production-ready UI for Spendly, a personal expense tracker built on Flask + Jinja2 + vanilla CSS (repo - https://github.com/campusx-official/spendly). Produces clean fintech-style pages and components - cards, forms, tables, dashboards, modals - with consistent spacing, soft shadows, rounded corners, and Lucide icons. Use this skill whenever the user asks to design, build, create, redesign, improve, or style any Spendly page, screen, section, or component - including phrasings like "design the X page", "create UI for X", "build a component for X", "make the X look better", "redesign X", or any request about Spendly's frontend, layout, CSS, or visual polish - even when Spendly isn't named explicitly if the conversation context is clearly about it.
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Spendly UI Designer
@@ -20,7 +20,7 @@ Generate output that fits this stack. Do not introduce React, Vue, Tailwind, sha
 
 ## Before you design: check what already exists
 
-If the user's project files are available (e.g. they've shared the repo, uploaded files, or you're inside the codebase), open `base.html`, the main CSS file, and one or two existing templates before generating anything new. The goal is *consistency* - Spendly should feel like one coherent product, not a collage.
+If the user's project files are available (e.g. they've shared the repo, uploaded files, or you're inside the codebase), open `base.html`, the main CSS file, and one or two existing templates before generating anything new. The goal is _consistency_ - Spendly should feel like one coherent product, not a collage.
 
 Specifically, look for and reuse:
 
@@ -37,6 +37,7 @@ If you can't see the existing files and the request is non-trivial, ask the user
 When you have no existing reference to follow, default to this. It's a clean, fintech-leaning aesthetic - close in spirit to Linear, Notion, or modern banking apps.
 
 **Palette (defaults, override to match existing):**
+
 - Background: very light neutral (`#F7F8FA` or near-white)
 - Surface (cards): white (`#FFFFFF`) with a soft border (`#E5E7EB`) and/or tiny shadow
 - Text: near-black for primary (`#111827`), muted gray for secondary (`#6B7280`)
@@ -52,6 +53,7 @@ When you have no existing reference to follow, default to this. It's a clean, fi
 **Typography:** system font stack is fine (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`) or Inter if the project uses it. Type scale: 12 / 14 / 16 / 20 / 24 / 32. Font weights: 400 body, 500 medium, 600 semibold for headings. Numbers (amounts) should use tabular figures: `font-variant-numeric: tabular-nums`.
 
 **Layout patterns:**
+
 - Card-based composition - group related info in surfaces, don't sprawl
 - Generous whitespace - tight layouts read as cluttered in finance apps
 - Left-aligned content with clear hierarchy; centered layouts only for empty states and auth
@@ -77,6 +79,7 @@ And call `lucide.createIcons()` after the DOM is ready (and after any dynamic DO
 Size icons via CSS with `width` and `height` on the `<svg>` (after Lucide replaces the `<i>`) or wrap in a span with the size you want. Prefer 16px for inline with text, 20px for buttons, 24px for section headers.
 
 Pick icons that carry meaning. A few Spendly-appropriate defaults:
+
 - Expense/spend: `arrow-down-right`, `shopping-bag`, `credit-card`
 - Income: `arrow-up-right`, `wallet`, `trending-up`
 - Budget: `target`, `pie-chart`
@@ -93,9 +96,11 @@ Don't sprinkle icons everywhere. One icon per button, one per section heading, o
 When fulfilling a design request, structure your response like this:
 
 ### 1. Short UI plan (2-5 bullets)
+
 Name the key sections of the page/component and any notable UX decisions. Keep it tight - this is orientation, not a spec document. Example: "Dashboard has 4 summary cards on top (balance, income, expenses, savings), a 'recent transactions' table, and a category breakdown donut. Summary cards show trend vs last month as a small delta pill."
 
 ### 2. The code
+
 - **Template file(s)** - full Jinja2 with `{% extends "base.html" %}` and a `{% block content %}` unless building `base.html` itself. Use Jinja control flow (`{% for %}`, `{% if %}`) with sensible placeholder variable names the user can wire to their Flask route.
 - **CSS** - either a new file (e.g. `static/css/dashboard.css`) or additions to an existing stylesheet. Scope with a page/component class prefix (`.dashboard-...`, `.tx-table-...`) so styles don't leak.
 - **JS** (only if needed) - vanilla, no frameworks. Small and readable.
@@ -103,6 +108,7 @@ Name the key sections of the page/component and any notable UX decisions. Keep i
 Put each file in its own fenced code block with a clear header comment or path annotation like `{# templates/dashboard.html #}` or `/* static/css/dashboard.css */`.
 
 ### 3. Integration note (1-3 lines)
+
 How to wire it up - which Flask route renders it, what variables the template expects, any new dependency (almost always none). If the user needs to add a link in the sidebar or a route in `app.py`, call that out.
 
 ## What to avoid
@@ -117,7 +123,7 @@ How to wire it up - which Flask route renders it, what variables the template ex
 
 ## Handling ambiguity
 
-If the user asks for something under-specified ("design the reports page"), make reasonable assumptions and *state them up front* in the UI plan - one line each, no long preamble. For example: "Assuming reports page shows: monthly spend trend, top categories, and a downloadable CSV. Let me know if you want different widgets."
+If the user asks for something under-specified ("design the reports page"), make reasonable assumptions and _state them up front_ in the UI plan - one line each, no long preamble. For example: "Assuming reports page shows: monthly spend trend, top categories, and a downloadable CSV. Let me know if you want different widgets."
 
 Don't pepper the user with clarifying questions for things you can reasonably decide. Do ask when the answer genuinely changes the output - e.g. "Is this a standalone page or a modal on top of the dashboard?"
 
@@ -126,6 +132,7 @@ Don't pepper the user with clarifying questions for things you can reasonably de
 **Request:** "Design the add expense form"
 
 **UI plan:**
+
 - Modal dialog (not a full page) - users add expenses inline from the dashboard
 - Fields: amount (large, prominent), category (pill selector), date (defaults to today), note (optional)
 - Primary action "Add expense" anchors bottom-right; cancel is a subtle text button
@@ -138,7 +145,3 @@ Don't pepper the user with clarifying questions for things you can reasonably de
 **JS:** small module-free script to open/close the modal and reset the form on close.
 
 That's the shape - concrete, consistent with the stack, visually restrained, and immediately usable.
-
-
-
-

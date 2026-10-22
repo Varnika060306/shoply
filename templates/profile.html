@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Your profile — Spendly{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="profile">
+    <div class="profile-inner">
+        <header class="profile-header">
+            <h1 class="profile-title">Your <em>profile</em></h1>
+            <p class="profile-subtitle">Your account details and a summary of your spending.</p>
+        </header>
+
+        <div class="profile-card profile-user">
+            <div class="profile-avatar" aria-hidden="true">{{ user.initials }}</div>
+            <div>
+                <h2 class="profile-user-name">{{ user.name }}</h2>
+                <p class="profile-user-email">{{ user.email }}</p>
+                <p class="profile-user-meta">Member since {{ user.member_since }}</p>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="profile-card profile-stat">
+                <p class="profile-stat-label">Total spent</p>
+                <p class="profile-stat-value">₹{{ "{:,.2f}".format(stats.total_spent) }}</p>
+            </div>
+            <div class="profile-card profile-stat">
+                <p class="profile-stat-label">Transactions</p>
+                <p class="profile-stat-value">{{ stats.transaction_count }}</p>
+            </div>
+            <div class="profile-card profile-stat">
+                <p class="profile-stat-label">Top category</p>
+                <p class="profile-stat-value">{{ stats.top_category }}</p>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <section class="profile-card" aria-labelledby="profile-tx-heading">
+                <div class="profile-section-head">
+                    <h2 id="profile-tx-heading" class="profile-section-title">Transaction history</h2>
+                    <span class="profile-section-note">{{ transactions|length }} expenses</span>
+                </div>
+                <div class="profile-table-wrap">
+                    <table class="profile-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Category</th>
+                                <th scope="col" class="is-num">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tx in transactions %}
+                            <tr>
+                                <td class="profile-table-date">{{ tx.date }}</td>
+                                <td>{{ tx.description or "—" }}</td>
+                                <td><span class="profile-badge cat--{{ tx.category|lower }}">{{ tx.category }}</span></td>
+                                <td class="is-num">₹{{ "{:,.2f}".format(tx.amount) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="profile-card" aria-labelledby="profile-cat-heading">
+                <div class="profile-section-head">
+                    <h2 id="profile-cat-heading" class="profile-section-title">By category</h2>
+                </div>
+                <ul class="profile-breakdown">
+                    {% for cat in categories %}
+                    <li class="profile-breakdown-row cat--{{ cat.name|lower }}">
+                        <div class="profile-breakdown-top">
+                            <span class="profile-breakdown-name">{{ cat.name }}</span>
+                            <span class="profile-breakdown-amount">₹{{ "{:,.2f}".format(cat.total) }}</span>
+                        </div>
+                        <progress class="profile-bar" value="{{ cat.percent }}" max="100"
+                            aria-label="{{ cat.name }}: {{ cat.percent }}% of spending">{{ cat.percent }}%</progress>
+                        <span class="profile-breakdown-percent">{{ cat.percent }}% of spending</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
